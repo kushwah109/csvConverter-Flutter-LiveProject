@@ -10,8 +10,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
+    // final h = MediaQuery.of(context).size.height;
+    // final w = MediaQuery.of(context).size.width;
 
     return Container(
       // margin: EdgeInsets.symmetric(vertical: h/80,horizontal: w/50),
