@@ -10,6 +10,7 @@ class AppTextStyle{
  static TextStyle downloadTextButton = TextStyle(color:AppColor.downloadText,fontWeight: FontWeight.bold);
  static TextStyle whatsappText = TextStyle(color:AppColor.whatsappColor);
  static TextStyle mailText = TextStyle(color:AppColor.mailColor);
+ static TextStyle openText = TextStyle(color: AppColor.openTextColor,fontWeight: FontWeight.bold);
 }
 
 
@@ -20,6 +21,13 @@ class AppButtonStyle{
    borderRadius: BorderRadius.all(Radius.circular(5)), // No border radius for square shape
   ),
  );
+ static ButtonStyle openFileButton =  ElevatedButton.styleFrom(backgroundColor: AppColor.buttonText,
+  shape: RoundedRectangleBorder(
+   borderRadius: BorderRadius.all(Radius.circular(5)), // No border radius for square shape
+  ),
+ );
+
+
 }
 
 // class WhatsappButtonStyle{

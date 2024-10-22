@@ -1,14 +1,15 @@
 
-import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart'as http;
 
 class ApiService{
  Future<dynamic> uploadFile(File file)async{
    print('step1');
-   var baseUrl = 'http://20.106.63.29/process_invoice/';
-
+   // var baseUrl = 'http://20.106.63.29/docs/';
+   // var baseUrl = 'http://20.106.63.29/process_invoice/';
+   var baseUrl = 'http://20.106.63.29/upload-file/';
    var url = Uri.parse(baseUrl);
+   // var request = http.MultipartRequest('GET', url);
    var request = http.MultipartRequest('POST', url);
    print('step2');
    print('File path: ${file.path}');
@@ -31,10 +32,7 @@ class ApiService{
        //   print("line $line");
        // }
        print('step5');
-       // var jsonResponse = jsonDecode(responseBody.body);
-       // var downloadLink = jsonResponse['download_link'];
-       
-       // var downloadLink = extractDownloadLink(responseBody.body);
+
        var downloadLink = responseBody.body;
        print('downloadLink data $downloadLink');
        return downloadLink;
@@ -46,19 +44,19 @@ class ApiService{
    }
    return null;
  }
-String? extractDownloadLink(String responseBody){
-   try{
-     print('extract');
-     var json = jsonDecode(responseBody);
-     print(json);
-     return json['file_url'];
-   }catch (e) {
-     print('Error parsing JSON response: $e');
-     return null;
-   }
-
-
-}
+// String? extractDownloadLink(String responseBody){
+//    try{
+//      print('extract');
+//      var json = jsonDecode(responseBody);
+//      print(json);
+//      return json['file_url'];
+//    }catch (e) {
+//      print('Error parsing JSON response: $e');
+//      return null;
+//    }
+//
+//
+// }
 
 }
 // class Converter{

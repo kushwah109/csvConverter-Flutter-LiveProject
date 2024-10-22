@@ -1,20 +1,27 @@
 import 'dart:io';
+import 'package:csv_converter/methods/sharing_platform_function.dart';
 import 'package:http/http.dart'as http;
 import 'package:csv_converter/methods/pickers.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
 PickerMethods pickerMethods=PickerMethods();
+SharingFileFunction sharingFileFunction = SharingFileFunction();
+
 class DownloadFunctions{
+bool isDownloading = false;
+// To store the downloaded file path
+String? downloadedFilePath;
 
   Future<String> downloadCSV(String downloadLink) async{
-
+if(isDownloading||downloadedFilePath != null) {
+  return downloadedFilePath ?? '';
+}
+isDownloading = true;
     try{
 
       print('downloadLink from downloadCSV $downloadLink');
@@ -66,6 +73,7 @@ class DownloadFunctions{
 
         }
       // Generate a unique file name for the CSV file
+
       String uniqueTimestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
       String csvFileName = 'ConvertedFile_$uniqueTimestamp.csv'; // Unique file name
       // Ensure the directory exists
@@ -79,12 +87,14 @@ class DownloadFunctions{
         Get.snackbar('Download Complete', 'CSV file saved to: $csvFileName',
             snackPosition: SnackPosition.TOP,
         duration: Duration(seconds: 5),
-        mainButton: TextButton(onPressed: ()async{
-          print('open location');
-          await openFileLocation(mobileDirectory!.path);
-          print(' location of file ${mobileDirectory.path}');
-        }, child: Text('show Location')));
-        return csvFileName;
+        // mainButton: TextButton(onPressed: ()async{
+        //   print('open location');
+        //   await openFileLocation(downloadDir);
+        //   print(' location of file $downloadDir');
+        // }, child: Text('show Location'))
+            );
+        // downloadedFilePath = downloadDir;
+        return downloadDir;
       // }else {
       //   throw Exception('Failed to download file');
       // }
@@ -92,49 +102,64 @@ class DownloadFunctions{
       print('error of download $e');
       Get.snackbar('Error', 'Failed to download CSV: $e', snackPosition: SnackPosition.TOP,duration: Duration(seconds: 5));
       return '';
+    }finally{
+      isDownloading = false;
     }
 
     } // Return the path of the downloaded file
 
 
-
-
   Future<void> openFileLocation(String directoryPath)async{
-
     if(Platform.isAndroid){
-      final Uri uri = Uri.parse('file://$directoryPath');
-
+      // final Uri uri = Uri.parse('file://$directoryPath');
+      try {
+        final result = await OpenFilex.open(directoryPath);
+        if (result.type != ResultType.done) {
+          Get.snackbar('Error', 'Could not open the file location');
+        }
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to open file location: $e');
+      }
       // final Uri uri = Uri.file(directoryPath);
+      // if(await canLaunchUrl(uri)){
+      //   await launchUrl(uri);
+      //
+      // }else{
+      //   Get.snackbar('Error', 'Could not open the file location');
+      // }
+    }
+    else if (Platform.isIOS){
+      final Uri uri = Uri.parse(directoryPath);
       if(await canLaunchUrl(uri)){
-        await launchUrl(uri);
+        await launchUrl(uri,mode: LaunchMode.externalApplication);
       }else{
         Get.snackbar('Error', 'Could not open the file location');
       }
     }
-    // else if (Platform.isIOS){
-    //   final Uri uri = Uri.parse(directoryPath);
-    //   if(await canLaunchUrl(uri)){
-    //     await launchUrl(uri);
-    //   }else{
-    //     Get.snackbar('Error', 'Could not open the file location');
-    //   }
-    // }
     else {
       Get.snackbar('Error', 'Opening file location is only supported on Android for now');
     }
   }
 
 
-
   // function to get file in download screen
   Future<List<File>> getCSVFiles()async{
     print('getcsvfile');
-    Directory? mobileDownload = Directory('/storage/emulated/0/Download');
+    // Directory? mobileDownload = Directory('/storage/emulated/0/Download');
 
-    // Directory mobileDownload = await Directory('/storage/emulated/0/Downloads');
+    Directory? mobileDownload;
+    // for android download folder
+    if(Platform.isAndroid) {
+      mobileDownload= Directory('/storage/emulated/0/Download');
+
+      //for ios download folder
+    }
+    else if(Platform.isIOS){
+      mobileDownload = await getApplicationDocumentsDirectory();
+    }
 
     // List all file in the directory
-    List<FileSystemEntity> files = mobileDownload.listSync();
+    List<FileSystemEntity> files = mobileDownload!.listSync();
     List<File> csvFiles =  files
         .where((file)=>file.path.endsWith('.csv'))
         .map((file)=>File(file.path))
@@ -146,17 +171,15 @@ class DownloadFunctions{
 
 
 
+
    Future<void> openFile(File file)async{
     print('openFile function start ');
     await pickerMethods.requestStoragePermission();
     if(await Permission.storage.isGranted  || await Permission.manageExternalStorage.isGranted) {
       final filePath = file.path;
       if (await file.exists()) {
-         await OpenFile.open(filePath);
-        // if (result.message != 'success') {
-        //   Get.snackbar('Error', 'Could not open the file: ${result.message}');
-        //   print(result.message);
-        // }
+         await OpenFilex.open(filePath);
+
       } else {
         Get.snackbar('Error', 'File does not exist');
       }

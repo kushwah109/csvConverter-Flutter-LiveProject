@@ -36,6 +36,7 @@ class _ConvertScreenState extends State<ConvertScreen> {
 ApiService apiService = ApiService();
 String? downloadLink ;
   bool isConverting = false;
+  bool isDownload = false;
   String convertedFilePath = '';
 
 
@@ -300,37 +301,74 @@ String? downloadLink ;
                                  Text('Share With',
                                    style: AppTextStyle.commonText.copyWith(fontSize: h / 40),),
                                  SizedBox(height: h / 30,),
-                                 Row(
-                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                   children: [
-                                     CustomButton(
-                                       label: 'Whatsapp',
-                                       color: AppColor.whatsappColor,
-                                       onPressed: () async{
+                                 CustomButton(
+                                   label: 'Share',
+                                   color: AppColor.whatsappColor,
+                                   onPressed: () async {
+                                     print('whatsapp button ');
+                                         print('Sharing as a local file...');
 
-                                         print('whatsapp button ');
-                                         String downloadLink = await apiService.uploadFile(selectedFile!);
-                                         sharingFileFunction.shareViaWhatsapp(downloadLink: downloadLink, );
+                                         if(downloadFunctions.isDownloading){
+                                             String downlaodFilePath = await downloadFunctions.downloadCSV(downloadLink!);
+                                             if(downlaodFilePath.isNotEmpty){
+                                               await sharingFileFunction.shareFileDirectly(downlaodFilePath);
+                                               //sharingFileFunction.resetUI();
+                                             }else{
+                                               print('Download failed or cancelled.');
 
-                                         // String shareLink = await apiService.uploadFile(selectedFile!);
-                                        //  sharingFileFunction.shareViaWhatsapp(downloadLink:shareLink);
+                                             }
+                                         }else{
+                                           if(downloadFunctions.downloadedFilePath == null){
+                                             String downlaodFile= await downloadFunctions.downloadCSV(downloadLink!);
+                                             await sharingFileFunction.shareFileDirectly(downlaodFile);
+                                             //sharingFileFunction.resetUI();
+                                           }
 
-                                       },
-                                       iconPath: whatsapp,
-                                       textStyle: AppTextStyle.whatsappText.copyWith(fontSize: h / 50),),
-                                     CustomButton(
-                                       label: 'Email',
-                                       color: AppColor.mailColor,
-                                       onPressed: () async{
-                                         print('start email');
-                                         String shareLink = await apiService.uploadFile(selectedFile!);
-                                         sharingFileFunction.shareViaEmail(emailAddress: email,downloadLink:shareLink );
+                                         }
 
-                                       },
-                                       iconPath: email,
-                                       textStyle: AppTextStyle.mailText.copyWith(fontSize: h / 40),)
-                                   ],
-                                 )
+                                   },
+                                   iconPath: AppIcons.share,
+                                   textStyle: AppTextStyle.whatsappText.copyWith(fontSize: h / 50),),
+
+                                 // Row(
+                                 //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 //   children: [
+                                 //     CustomButton(
+                                 //       label: 'Whatsapp',
+                                 //       color: AppColor.whatsappColor,
+                                 //       onPressed: () async{
+                                 //         print('whatsapp button ');
+                                 //         String downloadLink = await apiService.uploadFile(selectedFile!);
+                                 //         print('downlaodlink $downloadLink');
+                                 //         String filePath = await downloadFunctions.downloadCSV(downloadLink);
+                                 //         print('filepath $filePath');
+                                 //         // sharingFileFunction.shareViaWhatsapp(filePath: filePath);
+                                 //
+                                 //         if (filePath.isNotEmpty) {
+                                 //           sharingFileFunction.shareFileDirectly( filePath: filePath);
+                                 //         }
+                                 //
+                                 //
+                                 //       },
+                                 //       iconPath: whatsapp,
+                                 //       textStyle: AppTextStyle.whatsappText.copyWith(fontSize: h / 50),),
+                                 //     CustomButton(
+                                 //       label: 'Email',
+                                 //       color: AppColor.mailColor,
+                                 //       onPressed: () async{
+                                 //         print('start email');
+                                 //
+                                 //         String downloadLink = await apiService.uploadFile(selectedFile!);
+                                 //         String filePath = await downloadFunctions.downloadCSV(downloadLink);
+                                 //         sharingFileFunction.shareFileDirectly( filePath: filePath,);
+                                 //
+                                 //
+                                 //
+                                 //       },
+                                 //       iconPath: email,
+                                 //       textStyle: AppTextStyle.mailText.copyWith(fontSize: h / 40),)
+                                 //   ],
+                                 // )
 
                                ],
                              )
@@ -347,6 +385,7 @@ String? downloadLink ;
       ),
     );
   }
+
   void showInvalidFileDialog() {
     // showDialog(
     //     context: context,

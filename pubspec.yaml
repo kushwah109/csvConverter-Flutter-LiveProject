@@ -57,8 +57,8 @@ dependencies:
 # used for manage permission for use storage of device
   permission_handler:
 #file help to open directly in app
-  open_file:
-
+  open_filex:
+  shared_preferences:
 
 
 

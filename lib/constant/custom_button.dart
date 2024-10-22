@@ -1,9 +1,8 @@
-import 'package:csv_converter/constant/text.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final String label;
-  final String iconPath;
+  final IconData iconPath;
   final Color color;
   final TextStyle textStyle;
   final Function() onPressed;
@@ -42,11 +41,12 @@ class CustomButton extends StatelessWidget {
               label,
               style: textStyle,
             ),
-            Image.asset(
-                iconPath,
-              width: h/20,  // Adjust width as needed
-              height: w/15,
-            ),
+            Icon(iconPath)
+            // Image.asset(
+            //     iconPath,
+            //   width: h/20,  // Adjust width as needed
+            //   height: w/15,
+            // ),
           ],
         ),
       ),

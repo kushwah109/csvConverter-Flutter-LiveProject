@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:csv_converter/constant/colors.dart';
 import 'package:csv_converter/constant/icons.dart';
 import 'package:csv_converter/constant/imgespath.dart';
@@ -6,10 +5,7 @@ import 'package:csv_converter/constant/text.dart';
 import 'package:csv_converter/methods/pickers.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
-
 import 'download.dart';
 
 
