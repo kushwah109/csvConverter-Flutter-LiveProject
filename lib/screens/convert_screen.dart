@@ -283,6 +283,10 @@ String? downloadLink ;
                                        print('downlaod start');
                                         String downloadPath = await downloadFunctions.downloadCSV(downloadLink?? 'default Link');
                                        if (downloadPath.isNotEmpty) {
+                                         Get.snackbar('Downloaded', 'CSV file already downloaded to: $downloadPath',
+                                           snackPosition: SnackPosition.TOP,
+                                           duration: Duration(seconds: 5),
+                                         );
                                          print('Download successful at: $downloadPath');
                                        } else {
                                          print('Download failed or path is empty');
