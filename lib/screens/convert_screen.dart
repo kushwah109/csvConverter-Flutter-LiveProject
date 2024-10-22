@@ -12,7 +12,7 @@ import '../constant/custom_button.dart';
 import '../constant/icons.dart';
 import '../methods/pickers.dart';
 import 'download.dart';
-import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/widgets.dart'as pw;
 
 
 class ConvertScreen extends StatefulWidget {
