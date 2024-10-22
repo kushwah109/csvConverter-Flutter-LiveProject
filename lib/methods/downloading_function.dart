@@ -84,7 +84,9 @@ isDownloading = true;
         //save file
         File file = File(downloadDir);
         await file.writeAsString(downloadLink);
-        Get.snackbar('Download Complete', 'CSV file saved to: $csvFileName',
+       downloadedFilePath = downloadDir;
+
+      Get.snackbar('Download Complete', 'CSV file saved to: $downloadDir',
             snackPosition: SnackPosition.TOP,
         duration: Duration(seconds: 5),
         // mainButton: TextButton(onPressed: ()async{

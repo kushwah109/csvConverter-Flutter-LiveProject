@@ -280,9 +280,15 @@ String? downloadLink ;
                                    // style:AppButtonStyle.buttonStyle,
                                    onPressed: ()async{
                                      if(downloadLink!.isNotEmpty){
-                                        await downloadFunctions.downloadCSV(downloadLink?? 'default Link');
-
-                                     }else{
+                                       print('downlaod start');
+                                        String downloadPath = await downloadFunctions.downloadCSV(downloadLink?? 'default Link');
+                                       if (downloadPath.isNotEmpty) {
+                                         print('Download successful at: $downloadPath');
+                                       } else {
+                                         print('Download failed or path is empty');
+                                       }
+                                     }
+                                     else{
                                        print('invalid data');
                                      }
                                      // String csvFile = await convertedFilePath;
@@ -308,23 +314,87 @@ String? downloadLink ;
                                      print('whatsapp button ');
                                          print('Sharing as a local file...');
 
-                                         if(downloadFunctions.isDownloading){
-                                             String downlaodFilePath = await downloadFunctions.downloadCSV(downloadLink!);
-                                             if(downlaodFilePath.isNotEmpty){
-                                               await sharingFileFunction.shareFileDirectly(downlaodFilePath);
-                                               //sharingFileFunction.resetUI();
-                                             }else{
-                                               print('Download failed or cancelled.');
+                                     // Check if the file is being downloaded
+                                     if (downloadFunctions.isDownloading) {
+                                       Get.snackbar(
+                                         'Alert',
+                                         'File is currently downloading. Please wait until the download is complete.',
+                                         snackPosition: SnackPosition.TOP,
+                                         duration: Duration(seconds: 3),
+                                       );
+                                       return; // Exit if the file is currently downloading
+                                     }
 
-                                             }
-                                         }else{
-                                           if(downloadFunctions.downloadedFilePath == null){
-                                             String downlaodFile= await downloadFunctions.downloadCSV(downloadLink!);
-                                             await sharingFileFunction.shareFileDirectly(downlaodFile);
-                                             //sharingFileFunction.resetUI();
-                                           }
+                                     // Check if the file has already been downloaded
+                                     String? downloadPath = downloadFunctions.downloadedFilePath;
 
-                                         }
+                                     if (downloadPath == null || downloadPath.isEmpty) {
+                                       // If no file is downloaded, download it
+                                       String downloadedFilePath = await downloadFunctions.downloadCSV(downloadLink!);
+
+                                       // After downloading, check if the path is valid
+                                       if (downloadedFilePath.isNotEmpty) {
+                                         downloadFunctions.downloadedFilePath = downloadedFilePath; // Update the path
+                                         await sharingFileFunction.shareFileDirectly(downloadedFilePath); // Share the file
+                                       } else {
+                                         Get.snackbar(
+                                           'Error',
+                                           'Failed to download the file.',
+                                           snackPosition: SnackPosition.TOP,
+                                           duration: Duration(seconds: 3),
+                                         );
+                                       }
+                                     } else {
+                                       // If already downloaded, share it directly
+                                       print('File already downloaded. Sharing the file...');
+                                       await sharingFileFunction.shareFileDirectly(downloadPath);
+
+                                       // Show a snackbar message after sharing
+                                       Get.snackbar(
+                                         'File Shared',
+                                         'The file was successfully shared.',
+                                         snackPosition: SnackPosition.TOP,
+                                         duration: Duration(seconds: 3),
+                                       );
+                                     }
+                                     // // Check if the file is being downloaded
+                                     //     if(downloadFunctions.isDownloading){
+                                     //         String downloadedFilePath = await downloadFunctions.downloadCSV(downloadLink!);
+                                     //         // Once the file is downloaded, share it
+                                     //         if(downloadFunctions.downloadedFilePath!.isNotEmpty){
+                                     //           // Update downloadedFilePath after successful download
+                                     //           downloadFunctions.downloadedFilePath = downloadedFilePath;
+                                     //           await sharingFileFunction.shareFileDirectly(downloadedFilePath);
+                                     //           //sharingFileFunction.resetUI();
+                                     //         }else{
+                                     //           Get.snackbar(
+                                     //             'Error',
+                                     //             'Failed to download the file.', snackPosition: SnackPosition.TOP,
+                                     //             duration: Duration(seconds: 3),
+                                     //           );
+                                     //         }
+                                     //     }else{
+                                     //       // Check if the file is already downloaded
+                                     //       String? downloadPath = downloadFunctions.downloadedFilePath;
+                                     //       if(downloadPath == null || downloadPath.isEmpty){
+                                     //         Get.snackbar('Alert', 'Please download the file before sharing.');
+                                     //         // String downlaodFile= await downloadFunctions.downloadCSV(downloadLink!);
+                                     //         // await sharingFileFunction.shareFileDirectly(downlaodFile);
+                                     //         //sharingFileFunction.resetUI();
+                                     //       }else {
+                                     //         // File already downloaded, share it directly
+                                     //         print('File already downloaded. Sharing the file...');
+                                     //         await sharingFileFunction.shareFileDirectly(downloadPath);
+                                     //
+                                     //         // Show a snackbar message after sharing
+                                     //         Get.snackbar(
+                                     //           'File Shared',
+                                     //           'The file was successfully shared.',
+                                     //
+                                     //         );
+                                     //       }
+                                     //
+                                     //     }
 
                                    },
                                    iconPath: AppIcons.share,
