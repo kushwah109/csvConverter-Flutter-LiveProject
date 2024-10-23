@@ -9,5 +9,6 @@ class AppIcons{
  static  IconData downloadDone =  Icons.download_done;
  static  IconData share =  Icons.share_outlined;
  static  IconData exit =  Icons.close;
+ static  IconData splashButtonIcon =  Icons.arrow_right_alt_outlined;
  static  Icon pdf =  const Icon(Icons.picture_as_pdf);
 }

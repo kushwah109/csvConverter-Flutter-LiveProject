@@ -10,7 +10,8 @@ import 'download.dart';
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String button;
+  const HomePage({super.key, required this.button});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
               GestureDetector(
                 onTap: ()async{
                   print('image sucesse');
-                  await pickerMethods.pickImageFromCamera();
+                  await pickerMethods.pickImageFromCamera(widget.button);
                   // if (selectedImg != null) {
                   //   Get.to(() => ConvertScreen(imageFile: selectedImg));
                   // } else {
@@ -103,7 +104,7 @@ class _HomePageState extends State<HomePage> {
               GestureDetector(
                 onTap: ()async{
                   print('File success load');
-                  await pickerMethods.pickFileFromDrive();
+                  await pickerMethods.pickFileFromDrive(widget.button);
                 },
                 child: Card(
                   margin: EdgeInsets.symmetric(horizontal:h/40,vertical: h/60),
@@ -137,7 +138,7 @@ class _HomePageState extends State<HomePage> {
               GestureDetector(
                 onTap: ()async{
                   print('scan success load');
-                  await pickerMethods.scanDoc();
+                  await pickerMethods.scanDoc(widget.button);
                   // await pickerMethods.docScanner();
                 },
                 child: Card(

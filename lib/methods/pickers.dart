@@ -14,13 +14,13 @@ import '../screens/convert_screen.dart';
 class PickerMethods{
   File? selectedImg;
 // method of clickimg from camera
-  Future<void> pickImageFromCamera()async{
+  Future<void> pickImageFromCamera(String button)async{
     final XFile? returnedImg = await ImagePicker().pickImage(source: ImageSource.camera);
     print(returnedImg);
     if (returnedImg != null){
       selectedImg=File(returnedImg.path);
       print('Selected image path: ${selectedImg!.path}');
-      Get.to(() => ConvertScreen(imageFile: selectedImg));
+      Get.to(() => ConvertScreen(filePath: selectedImg, button: button,));
 
 
     }else{
@@ -31,13 +31,13 @@ class PickerMethods{
 
   File? selectedFile;
 // method of clickimg from camera
-  Future<void >pickFileFromDrive() async {
+  Future<void >pickFileFromDrive(String button) async {
     FilePickerResult? returnFile = await FilePicker.platform.pickFiles();
     print(returnFile);
     if (returnFile != null){
       selectedFile=File(returnFile.files.single.path!);
       print('Selected file path: ${selectedFile!.path}');
-      Get.to(() => ConvertScreen(driveFile: selectedFile));
+      Get.to(() => ConvertScreen(filePath: selectedFile, button: button,));
 
 
     }else{
@@ -70,7 +70,7 @@ class PickerMethods{
 
   //scan doc by flutter_doc_scanner
   List<File> scannedListDocuments = [];
-  Future<void> scanDoc() async{
+  Future<void> scanDoc(String button) async{
     print('firstStep');
     try{
       print('scan doc');
@@ -84,7 +84,7 @@ class PickerMethods{
         print('scanned doc File : $scannedFile');
         scannedListDocuments.add(scannedFile);
         print('scanned doc added: ${scannedFile.path}');
-        await savePdfAndNavigate(scannedFile);
+        await savePdfAndNavigate(scannedFile,button);
         // await convertListImgToPDF();
       }
       // if(scannedDocument != null){
@@ -118,7 +118,7 @@ class PickerMethods{
       openAppSettings();
     }
   }
-  Future<void> savePdfAndNavigate(File pdfFile) async {
+  Future<void> savePdfAndNavigate(File pdfFile,String button ) async {
     try {
       await requestStoragePermission();
       // Optionally, move the PDF to a permanent storage location
@@ -163,7 +163,7 @@ class PickerMethods{
           print('PDF saved at ${savedPdfFile.path}');
 
           // Navigate to the ConvertScreen and pass the PDF file
-          Get.to(() => ConvertScreen(scanPdf: savedPdfFile));
+          Get.to(() => ConvertScreen(filePath: savedPdfFile, button: button,));
         }
       }
     } catch (e) {

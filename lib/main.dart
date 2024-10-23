@@ -1,5 +1,5 @@
 import 'package:csv_converter/methods/pickers.dart';
-import 'package:csv_converter/screens/home.dart';
+import 'package:csv_converter/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: Splash(),
     );
   }
 }

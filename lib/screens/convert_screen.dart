@@ -16,10 +16,12 @@ import 'package:pdf/widgets.dart'as pw;
 
 
 class ConvertScreen extends StatefulWidget {
-  final File? imageFile;
-  final File? driveFile;
-  final File? scanPdf;
-  const ConvertScreen({super.key, this.imageFile, this.driveFile,  this.scanPdf,  });
+  // final File? imageFile;
+  // final File? driveFile;
+  // final File? scanPdf;
+  final File? filePath;
+  final String button;
+  const ConvertScreen({super.key, this.filePath,  required this.button,   });
 
   @override
   State<ConvertScreen> createState() => _ConvertScreenState();
@@ -27,13 +29,13 @@ class ConvertScreen extends StatefulWidget {
 
 class _ConvertScreenState extends State<ConvertScreen> {
   final ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
-  File? selectedFile;
-  String filePath="";
   PickerMethods pickerMethods=PickerMethods();
   FileExtension fileExtension = FileExtension();
   DownloadFunctions downloadFunctions = DownloadFunctions();
   SharingFileFunction sharingFileFunction = SharingFileFunction();
 ApiService apiService = ApiService();
+  File? selectedFile;
+  String filePath="";
 String? downloadLink ;
   bool isConverting = false;
   bool isDownload = false;
@@ -45,20 +47,20 @@ String? downloadLink ;
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.imageFile != null){
-      selectedFile = widget.imageFile;
+    if(widget.filePath != null){
+      selectedFile = widget.filePath;
       filePath = selectedFile!.path;
       print('Image File selected: $filePath');
-
-    }else if(widget.driveFile != null){
-      selectedFile = widget.driveFile;
-      filePath = selectedFile!.path;
-      print('Drive File selected: $filePath');
-
-    }else if(widget.scanPdf != null){
-      selectedFile = widget.scanPdf;
-      filePath = selectedFile!.path;
-      print('Scan File selected: $filePath');
+    //
+    // }else if(widget.driveFile != null){
+    //   selectedFile = widget.driveFile;
+    //   filePath = selectedFile!.path;
+    //   print('Drive File selected: $filePath');
+    //
+    // }else if(widget.scanPdf != null){
+    //   selectedFile = widget.scanPdf;
+    //   filePath = selectedFile!.path;
+    //   print('Scan File selected: $filePath');
 
     }
     validateFileType();
@@ -114,7 +116,70 @@ String? downloadLink ;
       // print('upload step4');
       // print('progres $i');
       }
-      downloadLink = await apiService.uploadFile(selectedFile!);
+
+        print('Widget button value: ${widget.button}');
+       if(widget.button == 'allFile'){
+         print('Widget button: ${widget.button}');
+         print('upload  file api');
+         downloadLink = await apiService.uploadFile(selectedFile!);
+       } else if(widget.button == 'dotedFile'){
+         print('Widget button: ${widget.button}');
+         print('upload doted file api');
+         downloadLink = await apiService.uploadDotedFile(selectedFile!);
+       }
+      // downloadLink = await apiService.uploadFile(selectedFile!);
+        // print('dowloadlink $downloadLink');
+        if(downloadLink != null && downloadLink!.isNotEmpty){
+          print('File uploaded successfully. Download link: $downloadLink');
+          setState(()  {
+            progressNotifier.value = 1.0;
+          });
+          // Circular progress for file processing
+          await Future.delayed(Duration(seconds: 2));
+        }else{
+          print('upload step6');
+          setState(() {
+            progressNotifier.value = 0.0;
+
+          });
+        }
+        }catch(e){
+        print('Error uploading file: $e');
+        setState(() {
+          progressNotifier.value = 0.0;
+
+        });
+      }finally{
+        setState(() {
+          print('upload step7');
+          isConverting = false;
+        });
+      }
+
+  }
+  Future<void> uploadAndConvertDotedFile()async{
+    print('upload step1');
+    if (selectedFile == null ||selectedFile!.path.isEmpty) {
+      print('No file selected or conversion is already in progress.');
+      return;
+    }
+    print(selectedFile);
+      setState(() {
+        print('upload step2');
+        isConverting = true;
+        progressNotifier.value = 0.1;
+      });
+      try{
+        print('Selected file path: ${selectedFile!.path}');
+
+        print('upload step3');
+        for (int i = 0; i <= 100; i += 10) {
+      await Future.delayed(Duration(milliseconds: 300)); // Simulate work
+      progressNotifier.value = i / 100; // Update progress
+      // print('upload step4');
+      // print('progres $i');
+      }
+      downloadLink = await apiService.uploadDotedFile(selectedFile!);
         // print('dowloadlink $downloadLink');
         if(downloadLink != null && downloadLink!.isNotEmpty){
           print('File uploaded successfully. Download link: $downloadLink');
@@ -183,7 +248,7 @@ String? downloadLink ;
           Get.back();
         },
             child: Icon(Icons.arrow_back_ios_new,color: AppColor.splashScreen,size: h/30,)),
-        title: Text('Csv Convert',style:AppTextStyle.commonText.copyWith(fontSize: h/35),),
+        title: Text('Csv Convert',style:AppTextStyle.whatsappText.copyWith(fontSize: h/35),),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -232,7 +297,7 @@ String? downloadLink ;
                      //   print('false again');
                      //   isConverting = false; // Set to false when conversion ends
                      // });
-                   Get.to(()=>ConvertScreen());
+                   Get.to(()=>ConvertScreen(button: '',));
                  }, child: Padding(
                padding:  EdgeInsets.symmetric(horizontal: w/20,vertical: w/90),
                child: Text('Convert',style: AppTextStyle.homeButton.copyWith(fontSize: h/35),),
@@ -313,7 +378,7 @@ String? downloadLink ;
                                  SizedBox(height: h / 30,),
                                  CustomButton(
                                    label: 'Share',
-                                   color: AppColor.whatsappColor,
+                                   color: AppColor.convertHeadingColor,
                                    onPressed: () async {
                                      print('whatsapp button ');
                                          print('Sharing as a local file...');
@@ -340,6 +405,7 @@ String? downloadLink ;
                                        if (downloadedFilePath.isNotEmpty) {
                                          downloadFunctions.downloadedFilePath = downloadedFilePath; // Update the path
                                          await sharingFileFunction.shareFileDirectly(downloadedFilePath); // Share the file
+                                         sharingFileFunction.resetUI();
                                        } else {
                                          Get.snackbar(
                                            'Error',
@@ -360,6 +426,7 @@ String? downloadLink ;
                                          snackPosition: SnackPosition.TOP,
                                          duration: Duration(seconds: 3),
                                        );
+                                       sharingFileFunction.resetUI();
                                      }
                                      // // Check if the file is being downloaded
                                      //     if(downloadFunctions.isDownloading){
