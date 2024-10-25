@@ -1,6 +1,6 @@
 allprojects {
     buildscript {
-        ext.kotlin_version = "1.8.22" // Specify Kotlin version here
+        ext.kotlin_version = "1.7.10" // Specify Kotlin version here
         repositories {
             google()
             mavenCentral()

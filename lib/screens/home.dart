@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'download.dart';
 
-
 class HomePage extends StatefulWidget {
   final String button;
+
   const HomePage({super.key, required this.button});
 
   @override
@@ -18,70 +18,70 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  PickerMethods pickerMethods=PickerMethods();
+  PickerMethods pickerMethods = PickerMethods();
 
-
-
-    @override
+  @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: h/15,
+        toolbarHeight: h / 15,
         centerTitle: true,
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-              onPressed: (){
+              onPressed: () {
                 Get.to(Download());
               },
-              icon: Icon(AppIcons.download,size: h/30,color: AppColor.splashScreen))
+              icon: Icon(AppIcons.download,
+                  size: h / 30, color: AppColor.splashScreen))
         ],
-        leading: GestureDetector(onTap: (){
-          Get.back();
-        },
-            child: Icon(Icons.arrow_back_ios_new,color: AppColor.splashScreen,size: h/30,)),
+        leading: GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              color: AppColor.splashScreen,
+              size: h / 30,
+            )),
       ),
-
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             children: [
               // SizedBox(height: h/20,),
-              Image.asset(homeimg,height: h/6,),
-          
-              Text('Choose an option',style:AppTextStyle.convert.copyWith(fontSize: h/30),),
-              SizedBox(height: h/60,),
-          
+              Image.asset(
+                homeimg,
+                height: h / 6,
+              ),
+
+              Text(
+                'Choose an option',
+                style: AppTextStyle.convert.copyWith(fontSize: h / 30),
+              ),
+              SizedBox(
+                height: h / 60,
+              ),
+
               GestureDetector(
-                onTap: ()async{
+                onTap: () async {
                   print('image sucesse');
                   await pickerMethods.pickImageFromCamera(widget.button);
-                  // if (selectedImg != null) {
-                  //   Get.to(() => ConvertScreen(imageFile: selectedImg));
-                  // } else {
-                  //   print("No image selected");
-                  // }
-                  // if(image != null){
-                  //   setState(() {
-                  //     print('object');
-                  //     selectedImg = image;
-                  //     Get.to(ConvertScreen());
-                  //   });
-                  // }
                 },
                 //Create card for clicking img from camera
                 child: Card(
-                  margin: EdgeInsets.symmetric(horizontal:h/40,vertical: h/60),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: h / 40, vertical: h / 60),
                   color: AppColor.uploadBoxColor,
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     dashPattern: [8, 6],
                     radius: Radius.circular(12),
-                    padding: EdgeInsets.all(h/16),
+                    padding: EdgeInsets.all(h / 16),
                     color: Colors.grey.shade500,
                     child: Column(
                       children: [
@@ -90,11 +90,21 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             AppIcons.uploadIcon,
-                            SizedBox(width: w/60,),
-                            Text('Upload a images',style: TextStyle(fontSize: h/50,fontWeight: FontWeight.bold),),
+                            SizedBox(
+                              width: w / 60,
+                            ),
+                            Text(
+                              'Upload a images',
+                              style: TextStyle(
+                                  fontSize: h / 50,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                        Text('Camera',style: TextStyle(fontSize: h/50),)
+                        Text(
+                          'Camera',
+                          style: TextStyle(fontSize: h / 50),
+                        )
                       ],
                     ),
                   ),
@@ -102,18 +112,19 @@ class _HomePageState extends State<HomePage> {
               ),
               // selected img from file
               GestureDetector(
-                onTap: ()async{
+                onTap: () async {
                   print('File success load');
                   await pickerMethods.pickFileFromDrive(widget.button);
                 },
                 child: Card(
-                  margin: EdgeInsets.symmetric(horizontal:h/40,vertical: h/60),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: h / 40, vertical: h / 60),
                   color: AppColor.uploadBoxColor,
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     dashPattern: [8, 6],
                     radius: Radius.circular(12),
-                    padding: EdgeInsets.all(h/16),
+                    padding: EdgeInsets.all(h / 16),
                     color: Colors.grey.shade500,
                     child: Column(
                       children: [
@@ -122,33 +133,43 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             AppIcons.uploadIcon,
-                            SizedBox(width: w/60,),
-                            Text('Upload a file',style: TextStyle(fontSize: h/50,fontWeight: FontWeight.bold),),
+                            SizedBox(
+                              width: w / 60,
+                            ),
+                            Text(
+                              'Upload a file',
+                              style: TextStyle(
+                                  fontSize: h / 50,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                        Text('Drive',style: TextStyle(fontSize: h/50),)
+                        Text(
+                          'Drive',
+                          style: TextStyle(fontSize: h / 50),
+                        )
                       ],
                     ),
                   ),
                 ),
               ),
-          
-          
+
               // scan doc and create pdf
               GestureDetector(
-                onTap: ()async{
+                onTap: () async {
                   print('scan success load');
                   await pickerMethods.scanDoc(widget.button);
                   // await pickerMethods.docScanner();
                 },
                 child: Card(
-                  margin: EdgeInsets.symmetric(horizontal:h/40,vertical: h/60),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: h / 40, vertical: h / 60),
                   color: AppColor.uploadBoxColor,
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     dashPattern: [8, 6],
                     radius: Radius.circular(12),
-                    padding: EdgeInsets.all(h/16),
+                    padding: EdgeInsets.all(h / 16),
                     color: Colors.grey.shade500,
                     child: Column(
                       children: [
@@ -157,31 +178,26 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             AppIcons.uploadIcon,
-                            SizedBox(width: w/60,),
-                            Text('Scan Doc',style: TextStyle(fontSize: h/50,fontWeight: FontWeight.bold),),
+                            SizedBox(
+                              width: w / 60,
+                            ),
+                            Text(
+                              'Scan Doc',
+                              style: TextStyle(
+                                  fontSize: h / 50,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                        Text('Scan Document Create PDF',style: TextStyle(fontSize: h/50),)
+                        Text(
+                          'Scan Document Create PDF',
+                          style: TextStyle(fontSize: h / 50),
+                        )
                       ],
                     ),
                   ),
                 ),
               ),
-          
-              // SizedBox(height: h/20,),
-              // SizedBox(
-              //   height: h/16,
-              //   width: w/1.2,
-              //   child: ElevatedButton(
-              //       style:AppButtonStyle.buttonStyle,
-              //       onPressed: (){
-              //         Get.to(()=>ConvertScreen());
-              //       }, child: Padding(
-              //         padding:  EdgeInsets.symmetric(horizontal: w/20,vertical: w/90),
-              //         child: Text('Upload',style: AppTextStyle.homeButton.copyWith(fontSize: h/35),),
-              //       )),
-              // ),
-          
             ],
           ),
         ),

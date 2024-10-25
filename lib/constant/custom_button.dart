@@ -6,7 +6,14 @@ class CustomButton extends StatelessWidget {
   final Color color;
   final TextStyle textStyle;
   final Function() onPressed;
-  const CustomButton({super.key, required this.label, required this.iconPath, required this.color, required this.onPressed, required this.textStyle});
+
+  const CustomButton(
+      {super.key,
+      required this.label,
+      required this.iconPath,
+      required this.color,
+      required this.onPressed,
+      required this.textStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class CustomButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 8,
@@ -27,13 +34,13 @@ class CustomButton extends StatelessWidget {
         ],
       ),
       child: ElevatedButton(
-        style:  ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5)), // No border radius for square shape
-          ),
-          elevation: 0
-        ),
-        onPressed:onPressed,
+        style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                  Radius.circular(5)), // No border radius for square shape
+            ),
+            elevation: 0),
+        onPressed: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -53,6 +60,3 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
-
-
-

@@ -6,7 +6,14 @@ class SplashCustomButton extends StatelessWidget {
   final Color color;
   final TextStyle textStyle;
   final Function() onPressed;
-  const SplashCustomButton({super.key, required this.label,  required this.iconPath, required this.onPressed, required this.textStyle, required this.color});
+
+  const SplashCustomButton(
+      {super.key,
+      required this.label,
+      required this.iconPath,
+      required this.onPressed,
+      required this.textStyle,
+      required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -14,26 +21,28 @@ class SplashCustomButton extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
 
     return SizedBox(
-      height: h/16,
-      width: w/0.5,
+      height: h / 16,
+      width: w / 0.5,
       child: ElevatedButton(
-        style:  ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)), // No border radius for square shape
+        style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                  Radius.circular(10)), // No border radius for square shape
             ),
-            elevation: 5
+            elevation: 5),
+        onPressed: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: textStyle,
+            ),
+            Icon(iconPath)
+          ],
         ),
-          onPressed: onPressed,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label,
-                style: textStyle,),
-              Icon(iconPath)
-            ],
-          ),
-        ),
+      ),
     );
   }
 }

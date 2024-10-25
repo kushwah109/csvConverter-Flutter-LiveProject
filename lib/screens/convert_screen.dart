@@ -12,16 +12,17 @@ import '../constant/custom_button.dart';
 import '../constant/icons.dart';
 import '../methods/pickers.dart';
 import 'download.dart';
-import 'package:pdf/widgets.dart'as pw;
-
+import 'package:pdf/widgets.dart' as pw;
 
 class ConvertScreen extends StatefulWidget {
-  // final File? imageFile;
-  // final File? driveFile;
-  // final File? scanPdf;
   final File? filePath;
   final String button;
-  const ConvertScreen({super.key, this.filePath,  required this.button,   });
+
+  const ConvertScreen({
+    super.key,
+    this.filePath,
+    required this.button,
+  });
 
   @override
   State<ConvertScreen> createState() => _ConvertScreenState();
@@ -29,39 +30,27 @@ class ConvertScreen extends StatefulWidget {
 
 class _ConvertScreenState extends State<ConvertScreen> {
   final ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
-  PickerMethods pickerMethods=PickerMethods();
+  PickerMethods pickerMethods = PickerMethods();
   FileExtension fileExtension = FileExtension();
   DownloadFunctions downloadFunctions = DownloadFunctions();
   SharingFileFunction sharingFileFunction = SharingFileFunction();
-ApiService apiService = ApiService();
+  ApiService apiService = ApiService();
   File? selectedFile;
-  String filePath="";
-String? downloadLink ;
+  String filePath = "";
+  String? downloadLink;
+
   bool isConverting = false;
   bool isDownload = false;
   String convertedFilePath = '';
-
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.filePath != null){
+    if (widget.filePath != null) {
       selectedFile = widget.filePath;
       filePath = selectedFile!.path;
       print('Image File selected: $filePath');
-    //
-    // }else if(widget.driveFile != null){
-    //   selectedFile = widget.driveFile;
-    //   filePath = selectedFile!.path;
-    //   print('Drive File selected: $filePath');
-    //
-    // }else if(widget.scanPdf != null){
-    //   selectedFile = widget.scanPdf;
-    //   filePath = selectedFile!.path;
-    //   print('Scan File selected: $filePath');
-
     }
     validateFileType();
   }
@@ -76,7 +65,10 @@ String? downloadLink ;
       print('Selected file type: $fileExtension');
 
       // Check if the file type is supported
-      if (  fileExtension == 'pdf'||fileExtension == 'png' ||  fileExtension == 'jpeg' || fileExtension == 'jpg') {
+      if (fileExtension == 'pdf' ||
+          fileExtension == 'png' ||
+          fileExtension == 'jpeg' ||
+          fileExtension == 'jpg') {
         print('File type is valid: $fileExtension');
         showValidDialog();
         // Proceed with the upload and conversion
@@ -93,138 +85,66 @@ String? downloadLink ;
     }
   }
 
-
-  Future<void> uploadAndConvert()async{
+  Future<void> uploadAndConvert() async {
     print('upload step1');
-    if (selectedFile == null ||selectedFile!.path.isEmpty) {
+    if (selectedFile == null || selectedFile!.path.isEmpty) {
       print('No file selected or conversion is already in progress.');
       return;
     }
     print(selectedFile);
-      setState(() {
-        print('upload step2');
-        isConverting = true;
-        progressNotifier.value = 0.1;
-      });
-      try{
-        print('Selected file path: ${selectedFile!.path}');
+    setState(() {
+      print('upload step2');
+      isConverting = true;
+      progressNotifier.value = 0.1;
+    });
+    try {
+      print('Selected file path: ${selectedFile!.path}');
 
-        print('upload step3');
-        for (int i = 0; i <= 100; i += 10) {
-      await Future.delayed(Duration(milliseconds: 300)); // Simulate work
-      progressNotifier.value = i / 100; // Update progress
-      // print('upload step4');
-      // print('progres $i');
+      print('upload step3');
+      for (int i = 0; i <= 100; i += 10) {
+        await Future.delayed(Duration(milliseconds: 300)); // Simulate work
+        progressNotifier.value = i / 100; // Update progress
+        // print('upload step4');
+        // print('progres $i');
       }
 
-        print('Widget button value: ${widget.button}');
-       if(widget.button == 'allFile'){
-         print('Widget button: ${widget.button}');
-         print('upload  file api');
-         downloadLink = await apiService.uploadFile(selectedFile!);
-       } else if(widget.button == 'dotedFile'){
-         print('Widget button: ${widget.button}');
-         print('upload doted file api');
-         downloadLink = await apiService.uploadDotedFile(selectedFile!);
-       }
+      print('Widget button value: ${widget.button}');
+      if (widget.button == 'allFile') {
+        print('Widget button: ${widget.button}');
+        print('upload  file api');
+        downloadLink = await apiService.uploadFile(selectedFile!);
+      } else if (widget.button == 'dotedFile') {
+        print('Widget button: ${widget.button}');
+        print('upload doted file api');
+        downloadLink = await apiService.uploadDotedFile(selectedFile!);
+      }
       // downloadLink = await apiService.uploadFile(selectedFile!);
-        // print('dowloadlink $downloadLink');
-        if(downloadLink != null && downloadLink!.isNotEmpty){
-          print('File uploaded successfully. Download link: $downloadLink');
-          setState(()  {
-            progressNotifier.value = 1.0;
-          });
-          // Circular progress for file processing
-          await Future.delayed(Duration(seconds: 2));
-        }else{
-          print('upload step6');
-          setState(() {
-            progressNotifier.value = 0.0;
-
-          });
-        }
-        }catch(e){
-        print('Error uploading file: $e');
+      // print('dowloadlink $downloadLink');
+      if (downloadLink != null && downloadLink!.isNotEmpty) {
+        print('File uploaded successfully. Download link: $downloadLink');
+        setState(() {
+          progressNotifier.value = 1.0;
+        });
+        // Circular progress for file processing
+        await Future.delayed(Duration(seconds: 2));
+      } else {
+        print('upload step6');
         setState(() {
           progressNotifier.value = 0.0;
-
-        });
-      }finally{
-        setState(() {
-          print('upload step7');
-          isConverting = false;
         });
       }
-
-  }
-  Future<void> uploadAndConvertDotedFile()async{
-    print('upload step1');
-    if (selectedFile == null ||selectedFile!.path.isEmpty) {
-      print('No file selected or conversion is already in progress.');
-      return;
-    }
-    print(selectedFile);
+    } catch (e) {
+      print('Error uploading file: $e');
       setState(() {
-        print('upload step2');
-        isConverting = true;
-        progressNotifier.value = 0.1;
+        progressNotifier.value = 0.0;
       });
-      try{
-        print('Selected file path: ${selectedFile!.path}');
-
-        print('upload step3');
-        for (int i = 0; i <= 100; i += 10) {
-      await Future.delayed(Duration(milliseconds: 300)); // Simulate work
-      progressNotifier.value = i / 100; // Update progress
-      // print('upload step4');
-      // print('progres $i');
-      }
-      downloadLink = await apiService.uploadDotedFile(selectedFile!);
-        // print('dowloadlink $downloadLink');
-        if(downloadLink != null && downloadLink!.isNotEmpty){
-          print('File uploaded successfully. Download link: $downloadLink');
-          setState(()  {
-            progressNotifier.value = 1.0;
-          });
-          // Circular progress for file processing
-          await Future.delayed(Duration(seconds: 2));
-        }else{
-          print('upload step6');
-          setState(() {
-            progressNotifier.value = 0.0;
-
-          });
-        }
-        }catch(e){
-        print('Error uploading file: $e');
-        setState(() {
-          progressNotifier.value = 0.0;
-
-        });
-      }finally{
-        setState(() {
-          print('upload step7');
-          isConverting = false;
-        });
-      }
-
+    } finally {
+      setState(() {
+        print('upload step7');
+        isConverting = false;
+      });
+    }
   }
-
-  // Future<void> convertingToCSV() async {
-  //   setState(() {
-  //     print('true');
-  //     isConverting = true;
-  //   });
-  //   print('converting once');
-  //   convertedFilePath = await converter.convertToCSV(selectedFile!,progressNotifier);
-  //   setState(() {
-  //     print(false);
-  //     isConverting = false;
-  //   });
-  //   // You can add logic to show a download option for the converted file here
-  //   print('once');
-  //
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -233,295 +153,271 @@ String? downloadLink ;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: h/15,
+        toolbarHeight: h / 15,
         centerTitle: true,
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            onPressed: (){
-              Get.to(Download());
-            },
-            icon: Icon(AppIcons.download,size: h/30,color: AppColor.splashScreen))
+              onPressed: () {
+                Get.to(Download());
+              },
+              icon: Icon(AppIcons.download,
+                  size: h / 30, color: AppColor.splashScreen))
         ],
-        leading: GestureDetector(onTap: (){
-          Get.back();
-        },
-            child: Icon(Icons.arrow_back_ios_new,color: AppColor.splashScreen,size: h/30,)),
-        title: Text('Csv Convert',style:AppTextStyle.whatsappText.copyWith(fontSize: h/35),),
+        leading: GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              color: AppColor.splashScreen,
+              size: h / 30,
+            )),
+        title: Text(
+          'Csv Convert',
+          style: AppTextStyle.whatsappText.copyWith(fontSize: h / 35),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
-         children: [
-           SizedBox(height: h/20,),
-           // Show selected image or placeholder
-           // Show img on convertscreen directly
-           selectedFile != null
-               ? Padding(
-                 padding: EdgeInsets.symmetric(horizontal: h/50),
-                 child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                 children: [
-                   fileExtension.getFileIcon(fileExtension.getFileExtension(filePath), h / 20),
-                       SizedBox(width: w / 80),
-                       Flexible(
-                         child: Text(
-                           filePath,overflow: TextOverflow.visible,maxLines: 3,
-                           style: TextStyle(fontSize: h / 60, color: Colors.black),
-                         ),
-                       ),  // Display file name
-                 ],
-                              ),
-               )
-               : Text("No image or file selected", style: TextStyle(fontSize: h / 35)),
+          children: [
+            SizedBox(
+              height: h / 20,
+            ),
+            // Show selected image or placeholder
+            // Show img on convertscreen directly
+            selectedFile != null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: h / 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        fileExtension.getFileIcon(
+                            fileExtension.getFileExtension(filePath), h / 20),
+                        SizedBox(width: w / 80),
+                        Flexible(
+                          child: Text(
+                            filePath,
+                            overflow: TextOverflow.visible,
+                            maxLines: 3,
+                            style: TextStyle(
+                                fontSize: h / 60, color: Colors.black),
+                          ),
+                        ), // Display file name
+                      ],
+                    ),
+                  )
+                : Text("No image or file selected",
+                    style: TextStyle(fontSize: h / 35)),
 
-           SizedBox(height: h/20,),
+            SizedBox(
+              height: h / 20,
+            ),
 
-           SizedBox(
-             height: h/16,
-             width: w/1.2,
-             child: ElevatedButton(
-                 style:AppButtonStyle.buttonStyle,
-                 onPressed: isConverting || downloadLink !=null ? null : ()async{
-                   print('if loop start');
-                     setState(() {
-                       print('again true');
-                       isConverting = true; // Set to true when conversion starts
-                     });
+            SizedBox(
+              height: h / 16,
+              width: w / 1.2,
+              child: ElevatedButton(
+                  style: AppButtonStyle.buttonStyle,
+                  onPressed: isConverting || downloadLink != null
+                      ? null
+                      : () async {
+                          print('if loop start');
+                          setState(() {
+                            print('again true');
+                            isConverting =
+                                true; // Set to true when conversion starts
+                          });
 
-                     // Start the conversion process and pass the progressNotifier
-                     print('call upload');
-                     await uploadAndConvert();
-                     //
-                     // setState(() {
-                     //   print('false again');
-                     //   isConverting = false; // Set to false when conversion ends
-                     // });
-                   Get.to(()=>ConvertScreen(button: '',));
-                 }, child: Padding(
-               padding:  EdgeInsets.symmetric(horizontal: w/20,vertical: w/90),
-               child: Text('Convert',style: AppTextStyle.homeButton.copyWith(fontSize: h/35),),
-             )),
-           ),
-           SizedBox(height: h/20,),
+                          // Start the conversion process and pass the progressNotifier
+                          print('call upload');
+                          await uploadAndConvert();
 
-           //progress Indicator
-           ValueListenableBuilder(
-               valueListenable: progressNotifier,
-               builder: (context,progress,child){
-                 print('process lister');
-                 if(isConverting && progress == 1.0){
-                   return CircularProgressIndicator(
-                     valueColor: AlwaysStoppedAnimation<Color>(AppColor.progressColor),
-                   );
-                 }else if(isConverting){
+                          Get.to(() => ConvertScreen(
+                                button: widget.button,
+                              ));
+                        },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: w / 20, vertical: w / 90),
+                    child: Text(
+                      'Convert',
+                      style: AppTextStyle.homeButton.copyWith(fontSize: h / 35),
+                    ),
+                  )),
+            ),
+            SizedBox(
+              height: h / 20,
+            ),
+
+            //progress Indicator
+            ValueListenableBuilder(
+                valueListenable: progressNotifier,
+                builder: (context, progress, child) {
+                  print('process lister');
+                  if (isConverting && progress == 1.0) {
+                    return CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColor.progressColor),
+                    );
+                  } else if (isConverting) {
                     return Padding(
-                   padding:  EdgeInsets.symmetric(horizontal: w/20),
-                       child: Column(
-                         children: [
-                       LinearProgressIndicator(
-                         minHeight: h/40,
-                         borderRadius: BorderRadius.all(Radius.circular(10)),
-                         value:progress,
-                         valueColor: AlwaysStoppedAnimation<Color>(AppColor.progressColor),
-                       ),
-                       SizedBox(height: 10,),
-                       Text('${(progress * 100).toStringAsFixed(0)}%', style: TextStyle(fontSize: h / 60)),
-                         ],
-                       ),
-                     );
-                         }else if(downloadLink != null && downloadLink!.isNotEmpty){
+                      padding: EdgeInsets.symmetric(horizontal: w / 20),
+                      child: Column(
+                        children: [
+                          LinearProgressIndicator(
+                            minHeight: h / 40,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            value: progress,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColor.progressColor),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text('${(progress * 100).toStringAsFixed(0)}%',
+                              style: TextStyle(fontSize: h / 60)),
+                        ],
+                      ),
+                    );
+                  } else if (downloadLink != null && downloadLink!.isNotEmpty) {
                     return Padding(
-                       padding: EdgeInsets.symmetric(horizontal: h/50),
-                       child: Column(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           Image.asset(splashImg,height: h/12,),
+                      padding: EdgeInsets.symmetric(horizontal: h / 50),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            splashImg,
+                            height: h / 12,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                  // style:AppButtonStyle.buttonStyle,
+                                  onPressed: () async {
+                                    if (downloadLink!.isNotEmpty) {
+                                      print('downlaod start');
+                                      String downloadPath =
+                                          await downloadFunctions.downloadCSV(
+                                              downloadLink ?? 'default Link');
+                                      if (downloadPath.isNotEmpty) {
+                                        // Get.snackbar(
+                                        //   'Downloaded',
+                                        //   'CSV file already downloaded to: $downloadPath',
+                                        //   snackPosition: SnackPosition.TOP,
+                                        //   duration: Duration(seconds: 5),
+                                        // );
+                                        print(
+                                            'Download successful at: $downloadPath');
+                                      } else {
+                                        print(
+                                            'Download failed or path is empty');
+                                      }
+                                    } else {
+                                      print('invalid data');
+                                    }
+                                    print('download success');
+                                  },
+                                  child: Text(
+                                    'Download',
+                                    style: AppTextStyle.downloadTextButton
+                                        .copyWith(fontSize: h / 60),
+                                  )),
+                            ],
+                          ),
+                          SizedBox(
+                            height: h / 20,
+                          ),
+                          SizedBox(
+                              // height: h/10,
+                              width: double.infinity,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Share With',
+                                    style: AppTextStyle.commonText
+                                        .copyWith(fontSize: h / 40),
+                                  ),
+                                  SizedBox(
+                                    height: h / 30,
+                                  ),
+                                  CustomButton(
+                                    label: 'Share',
+                                    color: AppColor.convertHeadingColor,
+                                    onPressed: () async {
+                                      print('whatsapp button ');
+                                      print('Sharing as a local file...');
 
-                           Row(
-                             mainAxisAlignment: MainAxisAlignment.end,
-                             children: [
-                               TextButton(
-                                   // style:AppButtonStyle.buttonStyle,
-                                   onPressed: ()async{
-                                     if(downloadLink!.isNotEmpty){
-                                       print('downlaod start');
-                                        String downloadPath = await downloadFunctions.downloadCSV(downloadLink?? 'default Link');
-                                       if (downloadPath.isNotEmpty) {
-                                         Get.snackbar('Downloaded', 'CSV file already downloaded to: $downloadPath',
-                                           snackPosition: SnackPosition.TOP,
-                                           duration: Duration(seconds: 5),
-                                         );
-                                         print('Download successful at: $downloadPath');
-                                       } else {
-                                         print('Download failed or path is empty');
-                                       }
-                                     }
-                                     else{
-                                       print('invalid data');
-                                     }
-                                     // String csvFile = await convertedFilePath;
-                                     //  await downloadFunctions.downloadCSV(convertedFilePath);
-                                     print('download success');
+                                      // Check if the file is being downloaded
+                                      if (downloadFunctions.isDownloading) {
+                                        Get.snackbar(
+                                          'Alert',
+                                          'File is currently downloading. Please wait until the download is complete.',
+                                          snackPosition: SnackPosition.TOP,
+                                          duration: Duration(seconds: 3),
+                                        );
+                                        return; // Exit if the file is currently downloading
+                                      }
 
-                                   }, child: Text('Download',style: AppTextStyle.downloadTextButton.copyWith(fontSize: h/60),)),
-                             ],
-                           ),
-                           SizedBox(height: h/20,),
-                           SizedBox(
-                             // height: h/10,
-                             width: double.infinity,
-                             child: Column(
-                               children: [
-                                 Text('Share With',
-                                   style: AppTextStyle.commonText.copyWith(fontSize: h / 40),),
-                                 SizedBox(height: h / 30,),
-                                 CustomButton(
-                                   label: 'Share',
-                                   color: AppColor.convertHeadingColor,
-                                   onPressed: () async {
-                                     print('whatsapp button ');
-                                         print('Sharing as a local file...');
+                                      // Check if the file has already been downloaded
+                                      String? downloadPath =
+                                          downloadFunctions.downloadedFilePath;
 
-                                     // Check if the file is being downloaded
-                                     if (downloadFunctions.isDownloading) {
-                                       Get.snackbar(
-                                         'Alert',
-                                         'File is currently downloading. Please wait until the download is complete.',
-                                         snackPosition: SnackPosition.TOP,
-                                         duration: Duration(seconds: 3),
-                                       );
-                                       return; // Exit if the file is currently downloading
-                                     }
+                                      if (downloadPath == null ||
+                                          downloadPath.isEmpty) {
+                                        // If no file is downloaded, download it
+                                        String downloadedFilePath =
+                                            await downloadFunctions
+                                                .downloadCSV(downloadLink!);
 
-                                     // Check if the file has already been downloaded
-                                     String? downloadPath = downloadFunctions.downloadedFilePath;
+                                        // After downloading, check if the path is valid
+                                        if (downloadedFilePath.isNotEmpty) {
+                                          downloadFunctions.downloadedFilePath =
+                                              downloadedFilePath; // Update the path
+                                          await sharingFileFunction
+                                              .shareFileDirectly(
+                                                  downloadedFilePath); // Share the file
+                                          sharingFileFunction.resetUI();
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
+                                            'Failed to download the file.',
+                                            snackPosition: SnackPosition.TOP,
+                                            duration: Duration(seconds: 3),
+                                          );
+                                        }
+                                      } else {
+                                        // If already downloaded, share it directly
+                                        print(
+                                            'File already downloaded. Sharing the file...');
+                                        await sharingFileFunction
+                                            .shareFileDirectly(downloadPath);
 
-                                     if (downloadPath == null || downloadPath.isEmpty) {
-                                       // If no file is downloaded, download it
-                                       String downloadedFilePath = await downloadFunctions.downloadCSV(downloadLink!);
-
-                                       // After downloading, check if the path is valid
-                                       if (downloadedFilePath.isNotEmpty) {
-                                         downloadFunctions.downloadedFilePath = downloadedFilePath; // Update the path
-                                         await sharingFileFunction.shareFileDirectly(downloadedFilePath); // Share the file
-                                         sharingFileFunction.resetUI();
-                                       } else {
-                                         Get.snackbar(
-                                           'Error',
-                                           'Failed to download the file.',
-                                           snackPosition: SnackPosition.TOP,
-                                           duration: Duration(seconds: 3),
-                                         );
-                                       }
-                                     } else {
-                                       // If already downloaded, share it directly
-                                       print('File already downloaded. Sharing the file...');
-                                       await sharingFileFunction.shareFileDirectly(downloadPath);
-
-                                       // Show a snackbar message after sharing
-                                       Get.snackbar(
-                                         'File Shared',
-                                         'The file was successfully shared.',
-                                         snackPosition: SnackPosition.TOP,
-                                         duration: Duration(seconds: 3),
-                                       );
-                                       sharingFileFunction.resetUI();
-                                     }
-                                     // // Check if the file is being downloaded
-                                     //     if(downloadFunctions.isDownloading){
-                                     //         String downloadedFilePath = await downloadFunctions.downloadCSV(downloadLink!);
-                                     //         // Once the file is downloaded, share it
-                                     //         if(downloadFunctions.downloadedFilePath!.isNotEmpty){
-                                     //           // Update downloadedFilePath after successful download
-                                     //           downloadFunctions.downloadedFilePath = downloadedFilePath;
-                                     //           await sharingFileFunction.shareFileDirectly(downloadedFilePath);
-                                     //           //sharingFileFunction.resetUI();
-                                     //         }else{
-                                     //           Get.snackbar(
-                                     //             'Error',
-                                     //             'Failed to download the file.', snackPosition: SnackPosition.TOP,
-                                     //             duration: Duration(seconds: 3),
-                                     //           );
-                                     //         }
-                                     //     }else{
-                                     //       // Check if the file is already downloaded
-                                     //       String? downloadPath = downloadFunctions.downloadedFilePath;
-                                     //       if(downloadPath == null || downloadPath.isEmpty){
-                                     //         Get.snackbar('Alert', 'Please download the file before sharing.');
-                                     //         // String downlaodFile= await downloadFunctions.downloadCSV(downloadLink!);
-                                     //         // await sharingFileFunction.shareFileDirectly(downlaodFile);
-                                     //         //sharingFileFunction.resetUI();
-                                     //       }else {
-                                     //         // File already downloaded, share it directly
-                                     //         print('File already downloaded. Sharing the file...');
-                                     //         await sharingFileFunction.shareFileDirectly(downloadPath);
-                                     //
-                                     //         // Show a snackbar message after sharing
-                                     //         Get.snackbar(
-                                     //           'File Shared',
-                                     //           'The file was successfully shared.',
-                                     //
-                                     //         );
-                                     //       }
-                                     //
-                                     //     }
-
-                                   },
-                                   iconPath: AppIcons.share,
-                                   textStyle: AppTextStyle.whatsappText.copyWith(fontSize: h / 50),),
-
-                                 // Row(
-                                 //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                 //   children: [
-                                 //     CustomButton(
-                                 //       label: 'Whatsapp',
-                                 //       color: AppColor.whatsappColor,
-                                 //       onPressed: () async{
-                                 //         print('whatsapp button ');
-                                 //         String downloadLink = await apiService.uploadFile(selectedFile!);
-                                 //         print('downlaodlink $downloadLink');
-                                 //         String filePath = await downloadFunctions.downloadCSV(downloadLink);
-                                 //         print('filepath $filePath');
-                                 //         // sharingFileFunction.shareViaWhatsapp(filePath: filePath);
-                                 //
-                                 //         if (filePath.isNotEmpty) {
-                                 //           sharingFileFunction.shareFileDirectly( filePath: filePath);
-                                 //         }
-                                 //
-                                 //
-                                 //       },
-                                 //       iconPath: whatsapp,
-                                 //       textStyle: AppTextStyle.whatsappText.copyWith(fontSize: h / 50),),
-                                 //     CustomButton(
-                                 //       label: 'Email',
-                                 //       color: AppColor.mailColor,
-                                 //       onPressed: () async{
-                                 //         print('start email');
-                                 //
-                                 //         String downloadLink = await apiService.uploadFile(selectedFile!);
-                                 //         String filePath = await downloadFunctions.downloadCSV(downloadLink);
-                                 //         sharingFileFunction.shareFileDirectly( filePath: filePath,);
-                                 //
-                                 //
-                                 //
-                                 //       },
-                                 //       iconPath: email,
-                                 //       textStyle: AppTextStyle.mailText.copyWith(fontSize: h / 40),)
-                                 //   ],
-                                 // )
-
-                               ],
-                             )
-                           ),
-                         ],
-                       ),
-                     );
-                 }
-                     return SizedBox.shrink();
-               }
-               ),
-         ],
+                                        // Show a snackbar message after sharing
+                                        Get.snackbar(
+                                          'File Shared',
+                                          'The file was successfully shared.',
+                                          snackPosition: SnackPosition.TOP,
+                                          duration: Duration(seconds: 2),
+                                        );
+                                        sharingFileFunction.resetUI();
+                                      }
+                                    },
+                                    iconPath: AppIcons.share,
+                                    textStyle: AppTextStyle.whatsappText
+                                        .copyWith(fontSize: h / 50),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    );
+                  }
+                  return SizedBox.shrink();
+                }),
+          ],
         ),
       ),
     );
@@ -543,6 +439,3 @@ String? downloadLink ;
     //     builder: (_)=>AlertDialog());
   }
 }
-
-
-

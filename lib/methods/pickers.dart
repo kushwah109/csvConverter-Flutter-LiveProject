@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -8,43 +6,46 @@ import 'package:flutter_doc_scanner/flutter_doc_scanner.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:path/path.dart'as path;
+import 'package:path/path.dart' as path;
 import '../screens/convert_screen.dart';
 
-class PickerMethods{
+class PickerMethods {
   File? selectedImg;
+
 // method of clickimg from camera
-  Future<void> pickImageFromCamera(String button)async{
-    final XFile? returnedImg = await ImagePicker().pickImage(source: ImageSource.camera);
+  Future<void> pickImageFromCamera(String button) async {
+    final XFile? returnedImg =
+        await ImagePicker().pickImage(source: ImageSource.camera);
     print(returnedImg);
-    if (returnedImg != null){
-      selectedImg=File(returnedImg.path);
+    if (returnedImg != null) {
+      selectedImg = File(returnedImg.path);
       print('Selected image path: ${selectedImg!.path}');
-      Get.to(() => ConvertScreen(filePath: selectedImg, button: button,));
-
-
-    }else{
+      Get.to(() => ConvertScreen(
+            filePath: selectedImg,
+            button: button,
+          ));
+    } else {
       print('no image select');
     }
   }
 
-
   File? selectedFile;
-// method of clickimg from camera
-  Future<void >pickFileFromDrive(String button) async {
+
+// method of select file from drive
+  Future<void> pickFileFromDrive(String button) async {
     FilePickerResult? returnFile = await FilePicker.platform.pickFiles();
     print(returnFile);
-    if (returnFile != null){
-      selectedFile=File(returnFile.files.single.path!);
+    if (returnFile != null) {
+      selectedFile = File(returnFile.files.single.path!);
       print('Selected file path: ${selectedFile!.path}');
-      Get.to(() => ConvertScreen(filePath: selectedFile, button: button,));
-
-
-    }else{
+      Get.to(() => ConvertScreen(
+            filePath: selectedFile,
+            button: button,
+          ));
+    } else {
       print('no file select');
     }
   }
-
 
   // create function for scan doc from img document
 
@@ -70,55 +71,64 @@ class PickerMethods{
 
   //scan doc by flutter_doc_scanner
   List<File> scannedListDocuments = [];
-  Future<void> scanDoc(String button) async{
+
+  //method for scan doc
+  Future<void> scanDoc(String button) async {
     print('firstStep');
-    try{
+    try {
       print('scan doc');
-      final Map<dynamic,dynamic>? scannedDocument = await FlutterDocScanner().getScanDocuments();
+      final Map<dynamic, dynamic>? scannedDocument =
+          await FlutterDocScanner().getScanDocuments();
       print('Scanned document: $scannedDocument');
-      if(scannedDocument != null && scannedDocument.containsKey('pdfUri')){
-      String? pdfUri = scannedDocument['pdfUri'];
-      if(pdfUri != null){
-        String filePath =  Uri.parse(pdfUri).toFilePath();
-        File scannedFile = File(filePath);
-        print('scanned doc File : $scannedFile');
-        scannedListDocuments.add(scannedFile);
-        print('scanned doc added: ${scannedFile.path}');
-        await savePdfAndNavigate(scannedFile,button);
-        // await convertListImgToPDF();
-      }
-      // if(scannedDocument != null){
-      //   print('scan file add');
-      //     scannedListDocuments.add(scannedDocument);
-      //     print('Scanned document added: ${scannedDocument.path}');
-      //     await convertListImgToPDF();
+      if (scannedDocument != null && scannedDocument.containsKey('pdfUri')) {
+        String? pdfUri = scannedDocument['pdfUri'];
+        if (pdfUri != null) {
+          String filePath = Uri.parse(pdfUri).toFilePath();
+          File scannedFile = File(filePath);
+          print('scanned doc File : $scannedFile');
+          scannedListDocuments.add(scannedFile);
+          print('scanned doc added: ${scannedFile.path}');
+          await savePdfAndNavigate(scannedFile, button);
+          // await convertListImgToPDF();
+        }
+        // if(scannedDocument != null){
+        //   print('scan file add');
+        //     scannedListDocuments.add(scannedDocument);
+        //     print('Scanned document added: ${scannedDocument.path}');
+        //     await convertListImgToPDF();
       } else {
         print('No document scanned');
       }
-    }catch(e){
+    } catch (e) {
       print('Error scanning document: $e');
       return null;
     }
   }
+
+  //function for handle permission of storage
   Future<void> requestStoragePermission() async {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
-    }else if (status.isDenied) {
+    } else if (status.isDenied) {
       if (await Permission.storage.request().isGranted) {
         print('Storage permission granted');
       } else {
-        Get.snackbar('Permission Denied', 'Storage permission is required for this feature.');
+        Get.snackbar('Permission Denied',
+            'Storage permission is required for this feature.');
         if (await Permission.storage.isPermanentlyDenied) {
           openAppSettings();
         }
       }
     } else if (status.isPermanentlyDenied) {
-      Get.snackbar('Permission Denied', 'Please enable storage permission from settings.');
+      Get.snackbar('Permission Denied',
+          'Please enable storage permission from settings.');
       openAppSettings();
     }
   }
-  Future<void> savePdfAndNavigate(File pdfFile,String button ) async {
+
+  //method to convert scan documents in pdf
+  Future<void> savePdfAndNavigate(File pdfFile, String button) async {
     try {
       await requestStoragePermission();
       // Optionally, move the PDF to a permanent storage location
@@ -126,35 +136,32 @@ class PickerMethods{
 
       String? newFileName = await showDialog<String>(
           context: Get.context!,
-          builder: (context){
+          builder: (context) {
             String fileName = 'scanned_document.pdf';
             return AlertDialog(
               title: Text('Enter File Name'),
               content: TextField(
-                onChanged: (value){
-                  fileName = value.isEmpty?'scanned_document.pdf': value+'.pdf';
+                onChanged: (value) {
+                  fileName =
+                      value.isEmpty ? 'scanned_document.pdf' : value + '.pdf';
                 },
                 decoration: InputDecoration(hintText: 'File Name'),
               ),
               actions: [
                 TextButton(
-                    onPressed: (){
-                      Get.back(result: fileName);
-                    },
-                    child: Text('Save'),)
+                  onPressed: () {
+                    Get.back(result: fileName);
+                  },
+                  child: Text('Save'),
+                )
               ],
             );
           });
       if (newFileName != null) {
-      // Directory? directory = await getExternalStorageDirectory();
+        // Directory? directory = await getExternalStorageDirectory();
         String? directory = await FilePicker.platform.getDirectoryPath();
 
         if (directory != null) {
-          // print('External storage is not available');
-          // return;
-          // }
-          // Define the path for the new PDF file
-
           final String externalPath = path.join(directory, newFileName);
           // Copy the PDF to the new location
 
@@ -163,7 +170,10 @@ class PickerMethods{
           print('PDF saved at ${savedPdfFile.path}');
 
           // Navigate to the ConvertScreen and pass the PDF file
-          Get.to(() => ConvertScreen(filePath: savedPdfFile, button: button,));
+          Get.to(() => ConvertScreen(
+                filePath: savedPdfFile,
+                button: button,
+              ));
         }
       }
     } catch (e) {
@@ -209,5 +219,4 @@ class PickerMethods{
 //       return null;
 //     }
 //   }
-
 }
